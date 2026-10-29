@@ -1,11 +1,10 @@
 #! /bin/bash
 GREEN='\033[1;32m'
 RED='\033[1;31m'
-NC='\033[0m' # No Color 重置
+NC='\033[0m' 
 YELLOW='\033[1;33m'
 
-#新版本编译好的二进制文件路径
-new_sbin='/usr/local/src/nginx-1.31.8/objs/nginx'
+
 #旧版本备份后缀
 old_last=$(date +%Y-%m-%d_%H%M%S)
 #nginx路径
@@ -16,12 +15,29 @@ pidfile="${nginx_dir}/logs/nginx.pid"
 pid_oldbin="${nginx_dir}/logs/nginx.pid.oldbin"
 
 
+#新版本编译好的二进制文件路径
+read -p "请输入新版本二进制文件路径：" new_sbin
+
 echo -e "${GREEN}-----正在执行nginx版本升级,使用前请确保新版nginx二进制编译完成-----${NC}"
+
+#检查新版本二进制文件
+echo -e "${YELLOW}正在检查新版二进制文件是否存在......${NC}"
 if [ ! -f "${new_sbin}" ];then
     echo -e "${RED}新版本二进制 ${new_sbin} 不存在！${NC}"
     exit 1
 fi
+echo -e "${GREEN}新版二进制文件存在${NC}"
+
+#检查旧版本二进制文件
+echo -e "${YELLOW}正在检查旧版本二进制文件是否存在.....${NC}"
+if [ ! -f "${nginx_dir}/sbin/nginx" ];then
+      echo -e "${RED}旧版本二进制 ${new_sbin} 不存在！${NC}"
+      exit 1
+fi
+echo -e "${GREEN}旧版二进制文件存在${NC}"
 sleep 2
+
+#查看当前nginx版本
 echo -e "${GREEN}查看当前nginx版本${NC}"
 "${nginx_dir}/sbin/nginx" -V
 sleep 2
@@ -31,6 +47,18 @@ if [ ! -f "${pidfile}" ];then
     exit 1
 fi 
   
+
+#备份旧的nginx文件
+echo -e "${GREEN}正在备份旧版二进制文件${NC}"
+cp "${nginx_dir}/sbin/nginx" "${nginx_dir}/sbin/nginx.${old_last}"
+
+if [ $? -eq 0 ];then
+    echo -e "${GREEN}备份成功${NC}"
+else 
+     echo -e "${RED}旧版备份失败${NC}"
+     exit 1
+fi
+
 
 #平滑升级主函数
 main_upgrade(){
@@ -78,26 +106,9 @@ main_upgrade(){
         fi
 }
 
-#检查旧版二进制文件是否存在
-old_sbin="${nginx_dir}/sbin/nginx"
 
-if [ ! -f "${old_sbin}" ];then
-      echo -e "${RED}旧版nginx二进制文件不存在${NC}"
-      exit 1
-else
-    echo -e "${GREEN}旧版二进制文件存在${NC}"
-fi
 
-#备份旧的nginx文件
-echo -e "${GREEN}正在备份旧版二进制文件${NC}"
-cp "${nginx_dir}/sbin/nginx" "${nginx_dir}/sbin/nginx.${old_last}"
 
-if [ $? -eq 0 ];then
-    echo -e "${GREEN}备份成功${NC}"
-else 
-     echo -e "${RED}旧版备份失败${NC}"
-     exit 1
-fi
 
 #替换二进制文件
 cp "${new_sbin}" "${nginx_dir}/sbin/nginx"
@@ -133,4 +144,5 @@ else
 fi
     
 echo -e "${GREEN}脚本执行完毕，请查看新版本nginx${NC}"
+rm -f "${nginx_dir}/sbin/nginx.bak" "${nginx_dir}/sbin/nginx.old"
 "${nginx_dir}/sbin/nginx" -V
