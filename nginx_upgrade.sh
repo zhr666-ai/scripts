@@ -90,7 +90,7 @@ main_upgrade(){
                 else 
                      echo -e "${GREEN}kill WINCH执行成功${NC}"
                fi
-               sleep 60
+               sleep 10
                #旧master优雅退出
                echo -e "${GREEN}旧master正在优雅退出${NC}"
                kill -QUIT $(cat "${pid_oldbin}")
