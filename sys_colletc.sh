@@ -42,7 +42,7 @@ echo -e "\n[高占用进程]" >> ${Log_file}
 echo "CPU TOP10:" >> ${Log_file}
 ps -ef --sort=-%cpu | head 11 >> ${Log_file}
 echo -e "\nMEM TOP10:" >> ${Log_file}
-ps -ef --sort=-%mem | head 11c
+ps -ef --sort=-%mem | head 11
 
 #5.防火墙状态
 echo -e "\n[5.防火墙状态]" >> ${Log_file}
