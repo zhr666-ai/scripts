@@ -24,19 +24,23 @@ echo "架构：$(uname -m)" >> ${Log_file}
 echo "uptime：$(uptime)" >> ${Log_file}
 echo "当前登录用户：$(whoami)" >> ${Log_file}
 
+
+echo -e "\n========================================================"
 #2.CPU,内存负载
 echo -e "\n[2.CPU & 内存负载]" >> ${Log_file}
 echo "top -bn1摘要：" >> ${Log_file}
 top -bn1 | head -15 >> ${Log_file}
-echo -e "\n free内存：" c
+echo -e "\n free内存：" >> ${Log_file}
 free -h >> ${Log_file}
 
 
+echo -e "\n========================================================"
 #3.磁盘信息
 echo -e "\n [磁盘挂载&使用率]" >> ${Log_file}
 df -h >> ${Log_file}
 lsblk >> ${Log_file}
 
+echo -e "\n========================================================"
 #4.进程信息
 echo -e "\n[高占用进程]" >> ${Log_file}
 echo "CPU TOP10:" >> ${Log_file}
@@ -44,6 +48,7 @@ ps -ef --sort=-%cpu | head 11 >> ${Log_file}
 echo -e "\nMEM TOP10:" >> ${Log_file}
 ps -ef --sort=-%mem | head 11
 
+echo -e "\n========================================================"
 #5.防火墙状态
 echo -e "\n[5.防火墙状态]" >> ${Log_file}
 if command -v systemctl &>/dev/null;then
